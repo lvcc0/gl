@@ -22,6 +22,10 @@ class ResourceManager
 private:
 	//Main vars(constants or semiconstants)
 	std::string relResPath; // full path to res directory
+	std::string relDataPath; // full path to data directory
+
+	const std::string data_file = "data.txt";
+
 	const std::string VERTEX_FILE_EXTENSION = "vert";
 	const std::string FRAGMENT_FILE_EXTENSION = "frag";
 
@@ -44,11 +48,14 @@ public:
 	// --- //
 
 	// Constructor
-	ResourceManager(const std::string& main_path);
+	ResourceManager(const std::string& main_path, const std::string& data_path);
 
 	// No move or copy constructors allowed
 	ResourceManager(const ResourceManager& obj) = delete;
 	ResourceManager(const ResourceManager&& obj) = delete;
+
+	// Take saved params
+	Camera load_camera_from_params(GLuint defaultWidth, GLuint defaultHeight, glm::vec3 defaultPos);
 
 	// Print objects in maps
 	void getObjectsInMaps(ObjectType objectType);

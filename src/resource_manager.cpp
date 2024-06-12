@@ -1,8 +1,9 @@
 #include "resource_manager.h"
 
-ResourceManager::ResourceManager(const std::string& main_path)
+ResourceManager::ResourceManager(const std::string& main_path, const std::string& data_path)
 {
 	relResPath = main_path.substr(0, main_path.find_last_of("/\\")); // saving res path
+    relDataPath = data_path.substr(0, data_path.find_last_of("/\\")); // saving data path
 };
 
 std::string ResourceManager::get_file_string(const std::string& file_rel_path)
@@ -275,6 +276,39 @@ std::shared_ptr<CylindricalBillboard> ResourceManager::make_cyl_billboard(std::s
     cylBillboardMap.emplace(name, cyl_billboard);
 
     return cyl_billboard;
+}
+
+Camera ResourceManager::load_camera_from_params(GLuint defaultWidth, GLuint defaultHeight, glm::vec3 defaultPos)
+{
+    std::string full_path = relDataPath + "/" + data_file;
+    std::ifstream file(full_path);
+    glm::vec3 vector3;
+    GLint width, height;
+    bool is_data_exist = false;
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::string linetype = line.substr(0, line.find(" "));
+
+        if (linetype == "camera/m_pos") {
+            std::istringstream v(line.substr(line.find(" ")));
+            v >> vector3.x >> vector3.y >> vector3.z;
+            is_data_exist = true;
+        }
+        else if (linetype == "camera/m_width") {
+            std::istringstream v(line.substr(line.find(" ")));
+            v >> width;
+        }
+        else if (linetype == "camera/m_height") {
+            std::istringstream v(line.substr(line.find(" ")));
+            v >> height;
+        }
+    }
+
+    if (is_data_exist)
+        return Camera(width, height, vector3);
+
+    return Camera(defaultWidth, defaultHeight, vector3);
 }
 
 std::shared_ptr<SphericalBillboard> ResourceManager::make_sph_billboard(std::string name, glm::vec3 pos, glm::vec2 size, const std::string& texture_path)

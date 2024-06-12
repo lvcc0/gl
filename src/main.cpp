@@ -20,6 +20,7 @@
 #include "resource_manager.h"
 #include "debugger.h"
 #include "post_processing.h"
+#include "saving_manager.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -39,7 +40,11 @@ float FOV = 45.0f;
 
 float materialShininess = 32.0f;
 
-Camera cam(WIN_WIDTH, WIN_HEIGHT, glm::vec3(0.0f, 0.0f, 0.0f));
+// Single classes objects inits
+ResourceManager resourceManager(RES_PATH, "C:/OpenGL/gl/data/");
+Camera cam = resourceManager.load_camera_from_params(WIN_WIDTH, WIN_HEIGHT, glm::vec3(1.0, 3.0, 1.0));
+
+// --------- // 
 
 std::vector<DirLight> dirLights =
 {
@@ -186,13 +191,11 @@ int main()
 
     // Single classes objects inits
 
-    ResourceManager resourceManager(RES_PATH);
+    SavingManager savingManager("C:/OpenGL/gl/data/");
     PostProcessing postProcessing(resourceManager.make_post_processing_shaders("screen_shaders"), WIN_WIDTH, WIN_HEIGHT);
     Debugger debugger;
 
     // --- // 
-
-
     for (unsigned int i = 0; i < pointLights.size(); i++)
         pointBillboards.push_back(resourceManager.make_sph_billboard("point_light", pointLights[i].m_pos, glm::vec2(1.0f, 1.0f), "textures/lightbulb.png"));
     
@@ -318,7 +321,7 @@ int main()
     glfwDestroyWindow(window);
     glfwTerminate();
     // --- //
-
+    savingManager.save_cameraState(cam);
     return 0;
 }
 

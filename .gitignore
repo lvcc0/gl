@@ -3,6 +3,7 @@ x64/
 out/
 bin/
 build/
+data/
 
 CMakeSettings.json
 imgui.ini
